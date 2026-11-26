@@ -117,11 +117,6 @@ export default function SignIn() {
         <div className="pitch">
           <h2>Stay ahead of driver fatigue.</h2>
           <p>Aizu Fleet shows drowsiness alerts from every vehicle as they happen, so you can act before a driver nods off at the wheel.</p>
-          <ul>
-            <li>Live Level 1 to 3 alerts for every trip</li>
-            <li>Incident steps and trip decisions in one place</li>
-            <li>Clips are kept only when an alert needs review</li>
-          </ul>
         </div>
         <p className="foot">Demo with simulated data. No account or email is real.</p>
       </aside>
