@@ -4,16 +4,16 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Eye, EyeOff, KeyRound, MailCheck } from 'lucide-react';
+import { ArrowLeft, Building2, Eye, EyeOff, KeyRound, MailCheck, ShieldCheck } from 'lucide-react';
 import { Button, Field, Toasts, cx } from '../ui';
 import { useApp } from '../state';
 import mark from '../assets/aizu-mark.png';
 
-type Mode = 'signin' | 'signup' | 'reset' | 'sent';
+type Mode = 'signin' | 'signup' | 'reset' | 'sent' | 'sso' | 'idp';
 type Errors = Partial<Record<'name' | 'company' | 'email' | 'pw' | 'pw2' | 'terms', string>>;
 
 const emailOk = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
-const titles: Record<Mode, string> = { signin: 'Sign in', signup: 'Create account', reset: 'Reset password', sent: 'Check your email' };
+const titles: Record<Mode, string> = { signin: 'Sign in', signup: 'Create account', reset: 'Reset password', sent: 'Check your email', sso: 'Single sign-on', idp: 'Company sign-in' };
 
 function Brand({ light }: { light?: boolean }) {
   return (
@@ -79,14 +79,17 @@ export default function SignIn() {
     setShow(false);
   };
   const clear = (k: keyof Errors) => setErr((e) => ({ ...e, [k]: undefined }));
-  const sso = () => toast('Single sign-on is not available in this demo. Use email and password.', 'info');
+  const sso = () => go('sso');
+  const domain = email.trim().split('@')[1]?.toLowerCase() ?? '';
+  const org = domain.split('.')[0] ?? '';
+  const orgName = org ? org.charAt(0).toUpperCase() + org.slice(1) : 'Your company';
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
     if (busy) return;
     const x: Errors = {};
     if (!emailOk(email)) x.email = email.trim() ? 'Enter a valid email, like name@company.com.' : 'Enter your work email.';
-    if (mode === 'signin' && !pw) x.pw = 'Enter your password.';
+    if ((mode === 'signin' || mode === 'idp') && !pw) x.pw = 'Enter your password.';
     if (mode === 'signup') {
       if (name.trim().length < 2) x.name = 'Enter your full name.';
       if (!company.trim()) x.company = 'Enter your company name.';
@@ -102,6 +105,10 @@ export default function SignIn() {
       run('Signing in…', 'Signed in', () => { setBusy(false); signIn(email.trim()); });
     } else if (mode === 'signup') {
       run('Creating your account…', `Account created. Welcome, ${name.trim().split(' ')[0]}`, () => { setBusy(false); signUp(name.trim(), email.trim(), company.trim()); }, 1200);
+    } else if (mode === 'sso') {
+      run('Redirecting to your company sign-in…', `Found single sign-on for ${domain}`, () => { setBusy(false); setPw(''); setShow(false); setMode('idp'); }, 1100);
+    } else if (mode === 'idp') {
+      run('Verifying with your company…', 'Signed in with company SSO', () => { setBusy(false); signIn(email.trim()); }, 1200);
     } else {
       run('Sending reset link…', 'Reset link sent', () => { setBusy(false); setMode('sent'); });
     }
@@ -187,7 +194,31 @@ export default function SignIn() {
               <button type="button" className="text-link" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, alignSelf: 'flex-start' }} onClick={() => go('signin')}>
                 <ArrowLeft size={16} /> Back to sign in
               </button>
-              {mode === 'sent' ? (
+              {mode === 'sso' ? (
+                <>
+                  <div className="head">
+                    <h1>Sign in with SSO</h1>
+                    <p className="muted">Enter your work email. We'll send you to your company's sign-in page.</p>
+                  </div>
+                  <Field label="Work email" type="email" value={email} onChange={(v) => { setEmail(v); clear('email'); }} placeholder="name@company.com" inputMode="email" autoComplete="email" error={err.email} />
+                  <Button type="submit" block loading={busy}>Continue</Button>
+                  <p className="legal">Demo: no real company sign-in is contacted.</p>
+                </>
+              ) : mode === 'idp' ? (
+                <div className="idp">
+                  <div className="idp-bar"><Building2 size={16} /> {orgName} sign-in · {domain}</div>
+                  <div className="idp-body">
+                    <div className="head">
+                      <h1>Sign in to {orgName}</h1>
+                      <p className="muted">Aizu Fleet is asking to use your {orgName} account.</p>
+                    </div>
+                    <div className="idp-user">{email.trim()}</div>
+                    <Password label="Password" value={pw} onChange={(v) => { setPw(v); clear('pw'); }} show={show} setShow={setShow} error={err.pw} autoComplete="current-password" placeholder="Your company password" />
+                    <Button type="submit" block loading={busy}>Sign in</Button>
+                    <p className="legal"><ShieldCheck size={14} style={{ verticalAlign: -2 }} /> Aizu Fleet gets your name and email only.</p>
+                  </div>
+                </div>
+              ) : mode === 'sent' ? (
                 <>
                   <div className="sent-ico"><MailCheck size={24} /></div>
                   <div className="head">

@@ -579,3 +579,10 @@ tbody tr:nth-child(n + 6), .mcard:nth-child(n + 6) { animation-delay: 0.2s; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0s !important; transition-duration: 0.01ms !important; }
 }
+
+/* Simulated company SSO (identity provider) screen */
+.idp { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.idp-bar { display: flex; align-items: center; gap: var(--s1); padding: var(--s1) var(--s2); background: var(--neutral-bg); font-size: 12px; color: var(--text-2); border-bottom: 1px solid var(--border); }
+.idp-body { display: flex; flex-direction: column; gap: var(--s2); padding: var(--s3); }
+.idp-body h1 { font-size: 20px; line-height: 28px; }
+.idp-user { padding: var(--s1) var(--s1h); border: 1px solid var(--border); border-radius: 999px; font-size: 13px; align-self: flex-start; }

@@ -10,7 +10,7 @@ This is a coded version of the fleet screens from the Aizu Figma prototype. It i
 
 | Area | What you can do |
 | --- | --- |
-| **Sign in / Create account** | Split-screen sign-in with empty fields, show/hide password and "Keep me signed in". Also: create an account (with password strength and terms), reset a password, and a company SSO button (demo message). |
+| **Sign in / Create account** | Split-screen sign-in with empty fields, show/hide password and "Keep me signed in". Also: create an account (with password strength and terms), reset a password, and a simulated company SSO sign-in (work email, then a generic company sign-in screen). |
 | **Overview** | Critical alert pop-up (Call driver, Open incident, Acknowledge), attention strip, On trip / All vehicles table, shift stats, latest alerts and most offenses. |
 | **Incident** | Five timed steps, minutes rested and a short note. Trip decision, where Replace and Stop ask for confirmation. Review result, driver's explanation, supervisor notes, and Close incident or Cancel. |
 | **Vehicles** | On trip / Parked / Offline or late cards (click one to filter), vehicle table, and Add vehicle with validation. |
